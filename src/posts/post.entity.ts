@@ -5,8 +5,8 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { PostType } from './enums/post-type.enum';
-import { postStatus } from './enums/post-status.enum';
+import { postType } from './enums/postType.enum';
+import { postStatus } from './enums/postStatus.enum';
 import { MetaOption } from '../meta-options/meta-option.entity';
 
 @Entity()
@@ -23,11 +23,11 @@ export class Post {
 
   @Column({
     type: 'enum',
-    enum: PostType,
+    enum: postType,
     nullable: false,
-    default: PostType.POST,
+    default: postType.POST,
   })
-  postType: PostType;
+  postType: postType;
 
   @Column({
     type: 'varchar',
@@ -70,7 +70,7 @@ export class Post {
   })
   publishOn?: Date;
 
-  @OneToOne(() => MetaOption)
+  @OneToOne(() => MetaOption, { cascade: true, eager: true })
   @JoinColumn()
   metaOptions?: MetaOption;
 
