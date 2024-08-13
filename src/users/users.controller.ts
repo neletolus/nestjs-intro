@@ -25,7 +25,7 @@ export class UsersController {
 
   @Get('/:id?')
   @ApiOperation({
-    summary: 'Fetches a list of registered users on the application.'
+    summary: 'Fetches a list of registered users on the application.',
   })
   @ApiQuery({
     name: 'limit',
@@ -54,7 +54,6 @@ export class UsersController {
 
   @Post()
   public createUsers(@Body() createUserDto: CreateUserDto) {
-    console.log(createUserDto);
     console.log(createUserDto instanceof CreateUserDto);
     return 'You sent a post request to users endpoint';
   }
