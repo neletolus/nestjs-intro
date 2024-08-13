@@ -11,6 +11,7 @@ import {
   IsUrl,
   Matches,
   MinLength,
+  MaxLength,
   ValidateNested,
 } from 'class-validator';
 import { PostType } from '../enums/post-type.enum';
@@ -22,6 +23,7 @@ export class CreatePostDto {
   @ApiProperty()
   @IsString()
   @MinLength(4)
+  @MaxLength(512)
   @IsNotEmpty()
   title: string;
 
@@ -38,6 +40,8 @@ export class CreatePostDto {
   })
   @IsString()
   @IsNotEmpty()
+  @MaxLength(256)
+  @MinLength(4)
   @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
     message:
       'A slug should be all small letters and uses only "-" and without spaces. For example "my-url"',
@@ -68,6 +72,8 @@ export class CreatePostDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsUrl()
+  @MinLength(4)
+  @MaxLength(1024)
   featuredImageUrl?: string;
 
   @ApiProperty({
