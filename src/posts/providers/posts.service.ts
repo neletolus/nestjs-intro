@@ -5,6 +5,9 @@ import { Repository } from 'typeorm';
 import { Post } from '../post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MetaOption } from 'src/meta-options/meta-option.entity';
+import { User } from 'src/users/user.entity';
+import { waitForDebugger } from 'inspector';
+import { TagsService } from "../../tags/providers/tags.service";
 
 @Injectable()
 export class PostsService {
@@ -21,19 +24,32 @@ export class PostsService {
     private readonly postsRepository: Repository<Post>,
 
     /**
-     * Inject metaOptionsRepository
+     *     * Injecting UsersRepository
      */
-    @InjectRepository(MetaOption)
-    private readonly metaOptionsRepository: Repository<MetaOption>,
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
+
+    /**
+     * Injecting Tags service
+     */
+    private readonly tagsService: TagsService,
   ) {}
 
   /**
    * Method to create a new post
    */
   public async create(createPostDto: CreatePostDto) {
+    let user = await this.usersRepository.findOneBy({
+      id: createPostDto.authorId,
+    });
+
+    let tags = await this.tagsService.findMultipleTags(createPostDto.tags);
+
     // Create the post
     let post = this.postsRepository.create({
       ...createPostDto,
+      author: user,
+      tags: tags,
     });
 
     return await this.postsRepository.save(post);
@@ -47,9 +63,20 @@ export class PostsService {
     let posts = await this.postsRepository.find({
       relations: {
         metaOptions: true,
+        author: true
       },
     });
 
     return posts;
+  }
+
+  /**
+   * Method to delete a post from the database
+   */
+  public async delete(id: number) {
+    // Find the post from the database
+    await this.postsRepository.delete(id);
+
+    return { deleted: true, id };
   }
 }

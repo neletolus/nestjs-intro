@@ -3,6 +3,7 @@ import {
   IsArray,
   IsEnum,
   IsISO8601,
+  IsInt,
   IsJSON,
   IsNotEmpty,
   IsOptional,
@@ -97,14 +98,13 @@ export class CreatePostDto {
   publishOn?: Date;
 
   @ApiPropertyOptional({
-    description: 'Array of tags passed as string values',
-    example: ['nestjs', 'typescript'],
+    description: 'Array of ids of tags passed as integers in an array',
+    example: [1, 2],
   })
   @IsOptional()
   @IsArray()
-  @IsString({ each: true })
-  @MinLength(3, { each: true })
-  tags?: string[];
+  @IsInt({ each: true })
+  tags?: number[];
 
   @ApiPropertyOptional({
     type: 'object',
@@ -124,4 +124,13 @@ export class CreatePostDto {
   @ValidateNested({ each: true })
   @Type(() => CreatePostMetaOptionsDto)
   metaOptions?: CreatePostMetaOptionsDto | null;
+
+  @ApiProperty({
+    type: 'integer',
+    required: true,
+    example: 1,
+  })
+  @IsNotEmpty()
+  @IsInt()
+  authorId: number;
 }
