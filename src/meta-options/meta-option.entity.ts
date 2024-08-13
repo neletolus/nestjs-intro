@@ -12,13 +12,6 @@ export class MetaOption {
   id: number;
 
   @Column({
-    type: 'varchar',
-    nullable: false,
-    length: 256,
-  })
-  key: string;
-
-  @Column({
     type: 'json',
     nullable: false,
   })

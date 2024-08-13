@@ -1,13 +1,10 @@
 import { GetUsersParamDto } from '../dtos/get-users-param.dto';
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { User } from '../user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
+import { AuthService } from '../../auth/providers/auth.service';
 
 /**
  * Class to connect to Users table and perform business operations
@@ -20,6 +17,10 @@ export class UsersService {
      * */
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+
+    // Injecting Auth Service
+    @Inject(forwardRef(() => AuthService))
+    private readonly authService: AuthService,
   ) {}
 
   public async createUser(createUserDto: CreateUserDto) {
