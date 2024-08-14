@@ -7,7 +7,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MetaOption } from 'src/meta-options/meta-option.entity';
 import { User } from 'src/users/user.entity';
 import { waitForDebugger } from 'inspector';
-import { TagsService } from "../../tags/providers/tags.service";
+import { TagsService } from '../../tags/providers/tags.service';
+import { PatchPostDto } from "../dtos/patch-post.dto";
 
 @Injectable()
 export class PostsService {
@@ -63,7 +64,7 @@ export class PostsService {
     let posts = await this.postsRepository.find({
       relations: {
         metaOptions: true,
-        author: true
+        author: true,
       },
     });
 
@@ -78,5 +79,33 @@ export class PostsService {
     await this.postsRepository.delete(id);
 
     return { deleted: true, id };
+  }
+
+  /**
+   * Method to Update a post
+   */
+  public async update(patchPostDto: PatchPostDto) {
+    // Find new tags
+    let tags = await this.tagsService.findMultipleTags(patchPostDto.tags);
+
+    // Update the post
+    let post = await this.postsRepository.findOneBy({
+      id: patchPostDto.id,
+    });
+
+    // Update post related properties
+    post.title = patchPostDto.title ?? post.title;
+    post.content = patchPostDto.content ?? post.content;
+    post.status = patchPostDto.status ?? post.status;
+    post.postType = patchPostDto.postType ?? post.postType;
+    post.slug = patchPostDto.slug ?? post.slug;
+    post.featuredImageUrl =
+      patchPostDto.featuredImageUrl ?? post.featuredImageUrl;
+    post.publishOn = patchPostDto.publishOn ?? post.publishOn;
+
+    // Update the tags
+    post.tags = tags;
+
+    return await this.postsRepository.save(post);
   }
 }
